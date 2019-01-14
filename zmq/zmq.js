@@ -44,6 +44,16 @@ module.exports = (promclient, config) => {
         help: 'totalTransactions from RSTAT output of ZMQ'
     })
 
+    let totalTransactionsWindowed = new Gauge({
+        name: 'iota_zmq_total_transactions_windowed',
+        help: 'totaConfirmedlTransactions between 5 minutes and 2 hours  from ct5m2h output of ZMQ'
+    })
+
+    let confirmationTransactionsWindowed = new Gauge({
+        name: 'iota_zmq_total_confirm_transactions_windowed',
+        help: 'totalTransactions between 5 minutes and 2 hours from t5m2h output of ZMQ'
+    })
+
     let confirmationTimeHisto = new Histogram({
         name: 'iota_zmq_tx_confirm_time',
         help: 'Actual seconds it takes to confirm each tx',
@@ -117,7 +127,13 @@ module.exports = (promclient, config) => {
 
         } else if (arr[0] === 'sn') {
             processNewConfirmedTransaction(arr[2])
+
+        } else if (arr[0] === 't5m2h') {
+            totalTransactionsWindowed.set(Number(arr[1]) || 0)
+        } else if (arr[0] === 'ct5m2h') {
+            confirmationTransactionsWindowed.set(Number(arr[1]) || 0)
         }
+
     }
 
 
